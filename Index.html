@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera Capture Learning</title>
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 50px; }
+    a { font-size: 18px; text-decoration: underline; cursor: pointer; color: blue; }
+    video, canvas, img { display: block; margin: 20px auto; border: 2px solid #333; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Learn Camera Capture in HTML</h1>
+  <p>Click the link below to open your camera and automatically capture an image.</p>
+
+  <!-- Clickable link -->
+  <a id="cameraLink">Open Camera & Capture</a>
+
+  <!-- Video & Canvas (hidden) -->
+  <video id="video" width="320" height="240" autoplay style="display:none;"></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+  <h3>Captured Image Preview:</h3>
+  <img id="preview" width="320" height="240"/>
+
+  <!-- Download Link -->
+  <a id="downloadLink" style="display:none;" download="captured.png">Download Captured Image</a>
+
+  <script>
+    const cameraLink = document.getElementById("cameraLink");
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const preview = document.getElementById("preview");
+    const downloadLink = document.getElementById("downloadLink");
+
+    cameraLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      cameraLink.style.display = "none";
+      video.style.display = "block";
+
+      try {
+        // Request camera access
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+
+        // Capture after 2 seconds
+        setTimeout(() => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          canvas.getContext("2d").drawImage(video, 0, 0);
+
+          // Get image data URL
+          const imageData = canvas.toDataURL("image/png");
+          preview.src = imageData;
+
+          // Prepare download link
+          downloadLink.href = imageData;
+          downloadLink.style.display = "inline-block";
+          downloadLink.textContent = "Download Captured Image";
+
+          
+        }, 2000);
+
+      } catch (err) {
+        alert("Camera access denied or unavailable.");
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
